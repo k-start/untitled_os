@@ -1,6 +1,8 @@
 #![no_std]
 #![no_main]
 #![feature(llvm_asm)]
+#![feature(custom_test_frameworks)]
+#![test_runner(crate::test_runner)]
 
 mod print;
 
@@ -27,6 +29,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
         }
     }
 
+    #[allow(clippy::empty_loop)]
     loop {}
 }
 
@@ -45,4 +48,12 @@ fn put_pixel(x: usize, y: usize, framebuffer: &mut FrameBuffer, colour: Rgb) {
     framebuffer.buffer_mut()[location + 1] = colour.g;
     framebuffer.buffer_mut()[location + 2] = colour.r;
     framebuffer.buffer_mut()[location + 3] = 0;
+}
+
+#[cfg(test)]
+fn test_runner(tests: &[&dyn Fn()]) {
+    println!("Running {} tests", tests.len());
+    for test in tests {
+        test();
+    }
 }
