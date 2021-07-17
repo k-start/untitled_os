@@ -1,7 +1,7 @@
 use bootloader_locator::locate_bootloader;
 use std::env;
 use std::path::Path;
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 pub fn main() {
     let args: Vec<String> = env::args().collect();
@@ -40,4 +40,17 @@ pub fn main() {
     if !exit_status.success() {
         panic!("bootloader build failed");
     }
+
+    Command::new("qemu-system-x86_64")
+        .args(&[
+            "-drive",
+            "format=raw,file=target/x86_64-os/debug/boot-uefi-untitled_os.img",
+            "-bios",
+            "OVMF-pure-efi.fd",
+            "-serial",
+            "stdio",
+        ])
+        .stdout(Stdio::inherit())
+        .output()
+        .expect("failed to execute process");
 }
