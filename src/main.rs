@@ -1,23 +1,24 @@
 #![no_std]
 #![no_main]
-#![feature(llvm_asm)]
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
-
-mod print;
 
 use bootloader::boot_info::FrameBuffer;
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
+use untitled_os_lib::println;
 
 #[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
+fn panic(info: &PanicInfo) -> ! {
+    println!("{}", info);
     loop {}
 }
 
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
+    untitled_os_lib::init();
+
     if let Some(framebuffer) = boot_info.framebuffer.as_mut() {
         let info = framebuffer.info();
         println!("{:?}", framebuffer.info());
@@ -29,8 +30,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
         }
     }
 
-    #[allow(clippy::empty_loop)]
-    loop {}
+    untitled_os_lib::hlt_loop();
 }
 
 struct Rgb {

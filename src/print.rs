@@ -1,7 +1,10 @@
 use core::fmt;
+use lazy_static::lazy_static;
 use spin::Mutex;
 
-pub static WRITER: Mutex<Writer> = Mutex::new(Writer { port: 0x3F8 });
+lazy_static! {
+    pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer { port: 0x3F8 });
+}
 
 pub struct Writer {
     port: u16,
@@ -17,7 +20,7 @@ impl fmt::Write for Writer {
 impl Writer {
     pub fn write_byte(&mut self, byte: u8) {
         unsafe {
-            outb(self.port, byte);
+            super::outb(self.port, byte);
         }
     }
 
@@ -26,10 +29,6 @@ impl Writer {
             self.write_byte(byte);
         }
     }
-}
-
-pub unsafe fn outb(port: u16, val: u8) {
-    llvm_asm!("outb $0, $1" : : "{al}"(val), "{dx}N"(port));
 }
 
 #[macro_export]
@@ -46,5 +45,9 @@ macro_rules! println {
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
-    WRITER.lock().write_fmt(args).unwrap();
+    use x86_64::instructions::interrupts;
+
+    interrupts::without_interrupts(|| {
+        WRITER.lock().write_fmt(args).unwrap();
+    });
 }

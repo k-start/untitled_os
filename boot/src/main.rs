@@ -44,9 +44,9 @@ pub fn main() {
     Command::new("qemu-system-x86_64")
         .args(&[
             "-drive",
-            "format=raw,file=target/x86_64-os/debug/boot-uefi-untitled_os.img",
-            "-bios",
-            "OVMF-pure-efi.fd",
+            "format=raw,file=target/x86_64-os/debug/boot-bios-untitled_os.img",
+            // "-bios",
+            // "OVMF-pure-efi.fd",
             "-serial",
             "stdio",
         ])
