@@ -19,15 +19,23 @@ entry_point!(kernel_main);
 fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     untitled_os_lib::init();
 
+    let mut total_mem = 0;
+
+    for i in 0..boot_info.memory_regions.len() {
+        total_mem += (*boot_info.memory_regions)[i].end - (*boot_info.memory_regions)[i].start;
+    }
+
+    println!("Memory: {}M", total_mem / 1024 / 1024);
+
     if let Some(framebuffer) = boot_info.framebuffer.as_mut() {
         let info = framebuffer.info();
         println!("{:?}", framebuffer.info());
 
-        for x in 0..info.horizontal_resolution {
-            for y in 0..info.vertical_resolution {
-                put_pixel(x, y, framebuffer, Rgb { r: 0, g: 0, b: 0 });
-            }
-        }
+        // for x in 0..info.horizontal_resolution {
+        //     for y in 0..info.vertical_resolution {
+        //         put_pixel(x, y, framebuffer, Rgb { r: 0, g: 0, b: 0 });
+        //     }
+        // }
     }
 
     untitled_os_lib::hlt_loop();

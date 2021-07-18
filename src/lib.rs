@@ -1,5 +1,4 @@
 #![no_std]
-#![feature(llvm_asm)]
 #![feature(abi_x86_interrupt)]
 
 pub mod gdt;
@@ -13,8 +12,20 @@ pub fn init() {
     x86_64::instructions::interrupts::enable();
 }
 
-pub unsafe fn outb(port: u16, val: u8) {
-    llvm_asm!("outb $0, $1" : : "{al}"(val), "{dx}N"(port));
+pub fn outb(port: u16, val: u8) {
+    use x86_64::instructions::port::Port;
+
+    let mut port = Port::new(port);
+    unsafe { port.write(val) };
+}
+
+pub fn inb(port: u16) -> u8 {
+    use x86_64::instructions::port::Port;
+
+    let mut port = Port::new(port);
+    let val: u8 = unsafe { port.read() };
+
+    val
 }
 
 pub fn hlt_loop() -> ! {
