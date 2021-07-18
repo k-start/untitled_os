@@ -31,11 +31,11 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
         let info = framebuffer.info();
         println!("{:?}", framebuffer.info());
 
-        // for x in 0..info.horizontal_resolution {
-        //     for y in 0..info.vertical_resolution {
-        //         put_pixel(x, y, framebuffer, Rgb { r: 0, g: 0, b: 0 });
-        //     }
-        // }
+        for x in 0..info.horizontal_resolution {
+            for y in 0..info.vertical_resolution {
+                put_pixel(x, y, framebuffer, Rgb { r: 0, g: 0, b: 0 });
+            }
+        }
     }
 
     untitled_os_lib::hlt_loop();

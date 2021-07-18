@@ -19,9 +19,7 @@ impl fmt::Write for Writer {
 
 impl Writer {
     pub fn write_byte(&mut self, byte: u8) {
-        unsafe {
-            super::outb(self.port, byte);
-        }
+        super::outb(self.port, byte);
     }
 
     pub fn write_string(&mut self, s: &str) {

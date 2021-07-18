@@ -3,6 +3,7 @@
 
 pub mod gdt;
 pub mod interrupts;
+pub mod keyboard;
 pub mod print;
 
 pub fn init() {
