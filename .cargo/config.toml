@@ -2,7 +2,7 @@
 kbuild = """build --target x86_64-os.json -Z build-std=core \
     -Z build-std-features=compiler-builtins-mem"""
 
-krun = """run --target x86_64-os.json -Z build-std=core \
+krun = """run --target x86_64-os.json -Z build-std=core,compiler_builtins,alloc \
     -Z build-std-features=compiler-builtins-mem"""
 
 [target.'cfg(target_os = "none")']

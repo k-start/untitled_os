@@ -41,16 +41,37 @@ pub fn main() {
         panic!("bootloader build failed");
     }
 
+    let mut qemu_args = vec![
+        // "-boot",
+        // "menu=on",
+        "-drive",
+    ];
+
+    if args.len() >= 3 && args[2] == "uefi" {
+        let mut uefi_args = vec![
+            "format=raw,file=target/x86_64-os/debug/boot-uefi-untitled_os.img,bus=0",
+            "-bios",
+            "OVMF-pure-efi.fd",
+        ];
+        qemu_args.append(&mut uefi_args);
+    } else {
+        let mut bios_args =
+            vec!["format=raw,file=target/x86_64-os/debug/boot-bios-untitled_os.img,bus=0"];
+        qemu_args.append(&mut bios_args);
+    }
+
+    let mut more_args = vec![
+        "-drive",
+        "format=raw,file=fat32.img,bus=1",
+        "-serial",
+        "stdio",
+    ];
+    qemu_args.append(&mut more_args);
+
     Command::new("qemu-system-x86_64")
-        .args(&[
-            "-drive",
-            "format=raw,file=target/x86_64-os/debug/boot-bios-untitled_os.img",
-            // "-bios",
-            // "OVMF-pure-efi.fd",
-            "-serial",
-            "stdio",
-        ])
+        .args(qemu_args)
         .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
         .output()
         .expect("failed to execute process");
 }
